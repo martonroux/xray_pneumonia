@@ -3,10 +3,11 @@ import os
 import cv2
 
 
-def samplify_data(train_dir: str = '../data/train',
-                  test_dir: str = '../data/test',
-                  val_dir: str = '../data/val',
-                  skip_test=False) ->\
+def preprocess_data(train_dir: str = '../data/train',
+                    test_dir: str = '../data/test',
+                    val_dir: str = '../data/val',
+                    skip_test=False,
+                    img_size=(256, 256)) ->\
         (tf.keras.utils.image_dataset_from_directory,
          tf.keras.utils.image_dataset_from_directory,
          tf.keras.utils.image_dataset_from_directory):
@@ -43,14 +44,14 @@ def samplify_data(train_dir: str = '../data/train',
 
     # TRANSFORMING IMAGES INTO DATASET
 
-    train_data = tf.keras.utils.image_dataset_from_directory(train_dir)
-    test_data = tf.keras.utils.image_dataset_from_directory(test_dir)
-    val_data = tf.keras.utils.image_dataset_from_directory(val_dir)
+    train_data = tf.keras.utils.image_dataset_from_directory(train_dir, image_size=img_size)
+    test_data = tf.keras.utils.image_dataset_from_directory(test_dir, image_size=img_size)
+    val_data = tf.keras.utils.image_dataset_from_directory(val_dir, image_size=img_size, batch_size=1)
 
     # PREPROCESSING
 
-    train_data = train_data.map(lambda x, y: (x / 255, y))
-    test_data = test_data.map(lambda x, y: (x / 255, y))
-    val_data = val_data.map(lambda x, y: (x / 255, y))
+    train_data = train_data.map(lambda x, y: (x / 256, y))
+    test_data = test_data.map(lambda x, y: (x / 256, y))
+    val_data = val_data.map(lambda x, y: (x / 256, y))
 
     return train_data, test_data, val_data
