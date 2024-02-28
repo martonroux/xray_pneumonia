@@ -96,7 +96,8 @@ class Dataset:
             #   0: the list of images of the given batch
             #   1: the labels of said images
             batches.append(
-                (shuffled_list[start:end], labels[start:end])
+                (torch.stack(shuffled_list[start:end], dim=0),
+                torch.Tensor(labels[start:end]))
             )
 
         if len(shuffled_list) % self._batch_size != 0:
@@ -105,7 +106,8 @@ class Dataset:
             #   1: the labels of said images
             start = -1 * (len(shuffled_list) % self._batch_size)
             batches.append(
-                (shuffled_list[start:], labels[start:])
+                (torch.stack(shuffled_list[start:], dim=0),
+                torch.Tensor(labels[start:]))
             )
 
         self._batch = batches
