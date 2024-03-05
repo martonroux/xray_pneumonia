@@ -37,11 +37,15 @@ class Dataset:
     ##
     # Iterator functions
     ##
+    def __len__(self):
+        return len(self._batch)
+
     def __iter__(self):
         return self
 
     def __next__(self):
         if len(self._batch) == self._batch_idx:  # If reached last batch, raise stop
+            self._batch_idx = 0
             raise StopIteration
         self._batch_idx += 1
         return self._batch[self._batch_idx - 1]
