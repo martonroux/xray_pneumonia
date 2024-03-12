@@ -3,7 +3,7 @@ import torch
 from random import Random
 
 
-ListTensors = List[torch.tensor]
+ListTensors = List[torch.Tensor]
 
 
 class Dataset:
@@ -21,6 +21,8 @@ class Dataset:
 
         if self._norm_label == self._pneu_label:
             raise ValueError("Given labels for Normal and Pneumonia data are identical.")
+        self._check_input_data(normal, "normal")
+        self._check_input_data(pneumonia, "pneumonia")
 
         # _batch will contain the current batch, according to the current shuffle, for the iterator.
         # It is organised as such:
@@ -33,6 +35,16 @@ class Dataset:
 
         # Run a shuffle with seed 0 to initialize batch
         self.shuffle(0)
+
+    ##
+    # Initial data checks
+    ##
+    def _check_input_data(self, data: ListTensors, arg_name: str) -> None:
+        if type(data) != list:
+            raise ValueError(arg_name + " argument needs to be of type List[torch.Tensor].")
+        for val in data:
+            if type(val) != torch.Tensor:
+                raise ValueError(arg_name + " elements need to be all torch.Tensor")
 
     ##
     # Iterator functions
@@ -116,9 +128,32 @@ class Dataset:
 
         self._batch = batches
 
+    ##
+    # This function allows the user to change the batch size without needing to create a new Dataset
+    ##
+    def change_batch_size(self, new_batch_size: int, shuffle_seed: int) -> None:
+        self._batch_size = new_batch_size
+        self.shuffle(shuffle_seed)
+
 
 if __name__ == "__main__":
     # Small test. File shouldn't run in main anyway
-    dataset = Dataset(["norm1", "norm2", "norm3", "norm4"], ["pneu1", "pneu2", "pneu3"], 0, 1, 2)
+    dataset = Dataset([
+        torch.Tensor([123]),
+        torch.Tensor([134]),
+        torch.Tensor([145]),
+        torch.Tensor([156])
+    ], [
+        torch.Tensor([223]),
+        torch.Tensor([234]),
+        torch.Tensor([245])
+    ], 0, 1, 2)
+
     for (X, y) in dataset:
         print("X:", X, "\ty:", y)
+
+    dataset.change_batch_size(3, 0)
+    print("\nChanged batch size")
+    for (X, y) in dataset:
+        print("X:", X, "\ty:", y)
+
