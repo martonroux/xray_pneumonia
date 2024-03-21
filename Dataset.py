@@ -100,17 +100,12 @@ class Dataset:
         # the batch with the newly shuffled data.
         ##
         shuffled_list: list = self._get_shuffle_list()
-        print("1")
         shuffled_list = self._shuffle_list(seed, shuffled_list)
-        print("2")
         labels: list = self._get_labels()
-        print("3")
         labels = self._shuffle_list(seed, labels)
-        print("4")
 
         self._batch = []
         for i in range(len(shuffled_list) // self._batch_size):
-            print(i, "/", len(shuffled_list) // self._batch_size)
             start = self._batch_size * i
             end = self._batch_size * (i + 1)
             # Append a tuple containing:
@@ -120,7 +115,6 @@ class Dataset:
                 (torch.stack(shuffled_list[start:end], dim=0),
                 torch.Tensor(labels[start:end]))
             )
-        print("5")
         if len(shuffled_list) % self._batch_size != 0:
             # Append a tuple containing:
             #   0: the list of images of the given batch
@@ -130,7 +124,6 @@ class Dataset:
                 (torch.stack(shuffled_list[start:], dim=0),
                 torch.Tensor(labels[start:]))
             )
-        print("6")
 
     ##
     # This function allows the user to change the batch size without needing to create a new Dataset
